@@ -11,6 +11,7 @@ int main(int argc,char ** argv,char ** env){
 	puts("我是子进程，我比vfork独立，父进程可以不去睡眠！！！\r\n");
 	}else{
 	puts("i am father ,my son dependent ,I am happy!!!\r\n");
+	
 	}
 	return 0;
 }
