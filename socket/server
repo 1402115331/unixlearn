@@ -1,0 +1,176 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+#define TIME_SIZE 16
+#define IP_SIZE 16
+#define BUF_SIZE 256
+#define CLIENT_SIZE 8
+#define BACKLOG CLIENT_SIZE
+#define INVALID -1
+
+struct CLIENT
+{
+	int clienfd;
+	struct sockaddr_in sockaddr;
+	char ip[IP_SIZE];
+	int port;
+};clients[CLIENT_SIZE];
+
+void init_client(void){
+	int i;
+	for(i=0;i<CLIENT_SIZE;i++){
+		clients[i].clienfd=INVALID;
+	}
+}
+void broadcase(char *msg){
+	int i;
+	for(i=0;i<CLIENT_SIZE;i++){
+		if(clients[i]!=INVALID){
+			write(clients[i].clienfd,msg,strlen(msg));
+		}
+	}
+}
+
+void stdmsg(int i,char *buffer,const char *msg){
+	char curtime[TIME_SIZE];
+	time_t curtime_t;
+	struct tm *timeinfo;
+
+	curtime_t=time(NULL);
+	timeinfo=localtime(&curtime_t);
+	strftime(curtime,TIME_SIZE,"%X",timeinfo);
+	sprintf(buffer,"<%s %s:%d>",curtime,clients[i].ip;clients[i].port,msg);
+}
+void accept_connect(int listenfd){
+	int connectfd,i;
+	char buffer[BUF_SIZE];
+	struct sockaddr_in clientaddr;
+	socklen_t connectlen=sizeof(struct sockaddr_in);
+
+	connectfd=accept(listenfd,(struct sockaddr_in*)&clientaddr,&connectlen);
+
+	for(i=0;i<CLIENT_SIZE;i++){
+		if(clients[i].clienfd==INVALID){
+			clients[i].clienfd=connectfd;
+			memcpy(&clients[i].sockaddr);
+			clients[i].port =ntohs(clients[i].sockaddr.sin_port);
+			inet_ntop(AF_INEt,&clients[i].sockaddr.sin_addr,clients[i].ip,IP_SIZE);
+			stdmsg(i,buffer,"登陆：\r\n");
+			printf("%s\n",buffer );
+			broadcase(buffer);
+			break;
+		}
+
+		if (i==CLIENT_SIZE)
+		{
+			strcpy(buffer,"out of number \r\n");
+			write(connectfd,buffer,strlen(buffer));
+			close(connectfd);
+		}
+
+	}
+
+
+ void chat(fd_set fdset)94     int sockfd, read_size, i;
+ 95     char read_buf[BUF_SIZE], send_buf[BUF_SIZE];
+ 96 
+ 97     for( i = 0; i < CLIENT_SIZE; i++ )
+ 98     {
+ 99         sockfd = clients[i].clienfd;
+100 
+101         if(sockfd != INVALID && FD_ISSET(sockfd,&fdset))
+102         {
+103             read_size = read(sockfd, read_buf, BUF_SIZE - 1);
+104 
+105             if(read_size == 0)
+106             {
+107                 //connection lost
+108                 close(sockfd);
+109                 clients[i].clienfd = INVALID;
+110                 stdmsg(i, send_buf, "logout\n");
+111                 printf("%s\n",send_buf);
+112                 broadcast(send_buf);
+113 
+114                 continue;
+115             }
+116             else
+117             {
+118                 read_buf[read_size] = '\0';
+119                 stdmsg(i, send_buf, read_buf);
+120                 printf("%s",send_buf);
+121                 broadcast(send_buf);
+122             }
+123         }
+124     }
+125 }
+126 
+127 int socket_setup(int port)
+128 {
+129     int rtn, listenfd = socket(AF_INET, SOCK_STREAM, 0);
+130     struct sockaddr_in sockaddr;
+131 
+132     bzero(&sockaddr, sizeof(sockaddr));
+133     sockaddr.sin_family = AF_INET;
+134     sockaddr.sin_port = htons(port);
+135     sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+136 
+137     rtn = bind(listenfd, (struct sockaddr *)&sockaddr, sizeof(sockaddr));
+138     if (rtn == INVALID)
+139     {
+140         puts("bind error\n");
+141         exit(1);
+142     }
+143 
+144     if(listen(listenfd,BACKLOG) == INVALID)
+145     {
+146         puts("listen error\n")
+147         exit(1);
+148     }
+149 
+150     puts("service setup\n");
+151     return listenfd;
+152 }
+153 
+154 int main(int argc,const char *argv[])
+155 {
+156     int maxfd, i, listenfd = socket_setup(atoi(argv[1]));
+157     fdset fdset;
+158 
+159     init_clients();
+160 
+161     while(1)
+162     {
+163         FD_ZERO(&fdset);
+164         FD_SET(listenfd, &fdset);
+165         maxfd = listenfd;
+166 
+167         for(i = 0; i < CLIENT_SIZE; i++)
+168         {
+169             if(clients[i].clienfd != INVALID)
+170             {
+171                 FD_SET(clients[i].clienfd, &fdset);
+172 
+173                 if(clients[i].clienfd > maxfd)
+174                 {
+175                     maxfd = clients[i].clienfd;
+176                 }
+177             }
+178         }
+179 
+180         select(maxfd + 1, &fdset, NULL, NULL, 0);
+181 
+182         if(FD_ISSET(listenfd, &fdset))
+183         {
+184             accept_connect(listenfd);
+185         }
+186         chat(fdset);
+187     }
+188     return 0;
+189 }
+		
+
