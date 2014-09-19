@@ -1,0 +1,15 @@
+1.-I 指定include进来的头文件的文件夹
+2.-L 指定library，确定扫描的动态库文件夹
+其余的仍然和正常一样 任然是gcc -Wall main.c ./Llibrary/hello_fn.o -o newfile.out
+这是因为默认gcc扫描的位置是/usr/local/include /usr/include  和/usr/lib /usr/local/lib 和./ 现在不是这个默认位置啦，所以不需手动指定-L -I的位置，并且后面一定要用绝对路径  
+3.类似于：gcc -Wall -I/home/helloword/c/gcc/testDB5/Iinclude main.c -L/home/helloword/c/gcc/testDB5/Llibrary ./Llibrary/hello_fn.o  -o new
+注意:可以把普通用的gcc -c main.c <==> gcc -I/usr/local/include -I/usr/include -L/usr/lib -L/usr/local/lib -c main.c
+4.也可以继续保持第三行的样式就是把头文件和库位置写到环境变量中 如下:
+LIBRARY_PATH=/home/helloword/c/gcc/testDB5/Llibrary
+export LIBRARY_PATH
+C_INCLUDE_PATH=/home/helloword/c/gcc/testDB5/Iinclude
+export C_INCLUDE_PATH
+
+5.类比java加载文件的路径，编译的首先查找-LI指定的地址 然后查找环境变量指定的内容  最后才是系统默认的路径5.类比java加载文件的路径，编译的首先查找-LI指定的地址 然后查找环境变量指定的内容  最后才是系统默认的路径
+
+
