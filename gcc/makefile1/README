@@ -1,0 +1,11 @@
+1.makefile主要包含三个要素
+target : prerequisites
+	command
+首先target即使我们可以在命令行位置使用的，并且在makefile中，make查找某个文件的适合会建立依赖和目标的关系，也就是说A的依赖就是B的target，A的target可能又是别人的依赖，这是这种链表式的关系构成了一个依赖关系书，这颗树的树根就是那些最原始的或者说是没有依赖关系的文件
+
+2.prerequisites 并不是绝对必须的，因为对于clean 他只是代表一个功能不是代表一个文件，所以他的依赖就不是必须的，但是特别注意command前面必须是一个tab 4个字节，否则会出错
+
+3.target必须是前面不能有空格，这正好和command前面必须有空格相对的，另外连接target和prerequisites的是冒号，置于冒号前后是否需要有空格并没有特别的要求
+
+
+
