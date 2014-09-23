@@ -1,0 +1,13 @@
+#如果说依赖关系的头文件可以省略，其实就是.c文件也是可以省略的，就是说make可以凭借一个简简单单的target就可以编译出来库文件。make会根据main.o的main自动去找main.c 然后gcc去找head.h 这在运行上是没有问题的
+#虽然没有生命main.c但是main.c的内容更新是会直接反应到make命令上的 可以用touch main.c测试
+#但是如果不声明头文件依赖，main.c又没有变化，那么就不会触发make的命令，因为头文件只有在gcc的时候才会被使用，这个时候就使得头文件的变化无法反应上来。所以依赖可以省略同名的.c，绝对不能省略.h 也可以用touch head.h 测试
+#如上说说，无论是生成文件的main.o还是不生成文件的clean在形式上是可以一致的，那么应该怎么区分他们哪。当然可以根据command来区分。事实上我们有一个更直观的方式就是 .PHONY 和phone就差在y上不不是表示的手机，而是手机骗子（欺骗的）:)
+#最上方的命令是默认命令 所以如果把main.o而不是all放在最前面，那么就会发现默认行为是main.o 并且不会生成可执行文件
+main.o: hello.h
+all :  main.o hello_fn.o
+	gcc -o new.out main.o hello_fn.o
+hello_fn.o:hello.h
+.PHONY :clean 
+clean: 
+	-rm hello_fn.o main.o new.out
+ #rm前面的-表示无论出现什么问题都执行当前命令（具体情景不详，以后遇到再说吧）

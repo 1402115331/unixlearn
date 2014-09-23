@@ -1,0 +1,9 @@
+new:hello_fn.o main.o
+	gcc  main.o  hello_fn.o
+hello_fn.o:hello_fn.c
+	gcc -c  hello_fn.c 
+main.o:hello_fn.o main.c 
+	gcc -c main.c
+
+clean: 
+	 rm hello_fn.o main.o a.out

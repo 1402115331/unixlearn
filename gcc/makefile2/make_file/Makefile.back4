@@ -1,0 +1,10 @@
+#1.make只能推到编译命令，不能推到连接命令，也就是说如果是-c的command可以省略，-o的不行
+#2.连接文件的target其实并没有太大的作用，因为一般没有别的程序再依赖他啦，对应于这里的all
+#3.如此看来makefile的结构也并没有如此复杂，大部分的依赖关系都是在一个平面里的，而不是在一个树状结构里
+
+all :  main.o hello_fn.o
+	gcc -o new.out main.o hello_fn.o
+main.o: main.c 
+hello_fn.o:hello_fn.c
+clean: 
+	 rm hello_fn.o main.o new.out

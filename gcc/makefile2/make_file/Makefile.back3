@@ -1,0 +1,11 @@
+#在使用gcc -c的时候他是不检查别的.o的，简单的说就是只是依赖 .c 和.h 不会依赖.o的并且只有，只有最终的命令才会依赖.o就是那个不带-c的gcc命令。
+#并且make能自动使用命令 ，可以直接之定义依赖就可以的
+new :  main.o hello_fn.o
+	gcc  main.o  hello_fn.o
+main.o: main.c 
+	gcc -c main.c
+hello_fn.o:hello_fn.c
+	gcc -c  hello_fn.c 
+
+clean: 
+	 rm hello_fn.o main.o a.out

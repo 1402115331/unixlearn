@@ -1,0 +1,17 @@
+helloo = hello_fn.o
+maino = main.o
+helloc = hello_fn.c
+mainc = main.c
+head = hello.h
+all = hello_fn.o main.o a.out
+
+
+new : $(maino) $(helloo)
+	gcc  $(maino) $(helloo)
+hello_fn.o : $(helloc) $(head)
+	gcc -c  $(helloc)
+main.o : $(mainc) $(helloo) 
+	gcc -c $(mainc)
+
+clean: 
+	 rm $(all)
