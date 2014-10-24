@@ -1,0 +1,63 @@
+#比较有意思的是，如果把一些列命令直接写在三段式的command里，必须是tab打头阵，但是如果是在define endef里定义的命令包，则不存在这个问题
+define show
+cd /home
+pwd
+endef
+pack:
+	$(show)
+
+define show2
+	cd /home;pwd
+endef
+
+pack2:
+	$(show2)
+
+#卸载一行就处于一个子进程，写在两行就是两个不同子进程
+exec:
+	cd /home
+	pwd
+exec2:
+	cd /home;pwd
+
+#0.对照组
+error:
+	mkdir test
+#忽略出错的三种方式
+#1.单行忽略
+error1:
+	-mkdir test
+
+#2.批量忽略
+
+.IGNORE: error2
+error2:
+	mkdir test
+
+#3.全局忽略，用-i标志
+
+#变量可以用在任意位置，如下 下面的例子能正常运行验证啦，变量确实可以适用于makefile的任意位置
+A=a
+C=c
+O=o
+
+$(A).$(O) : $(A).$(C)
+	g$(C)$(C) -$(C) $(A).$(C)
+
+
+pwd:
+	$(shell pwd)
+
+#效果上是：如果直接用=,那么变量就是一个字符串，类似于（view的行缓冲模式），而用define就是定义一个块，类似于（view的块缓冲模式）
+define block
+echo foo
+echo bar
+echo hahaha
+endef
+
+print:
+	$(block)
+
+
+
+
